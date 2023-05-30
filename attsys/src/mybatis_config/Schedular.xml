@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.as.dao.SchedularDao">
+	<select id="findSchedular" resultType="schedular" parameterType="schedular">
+			select 
+				a.id,
+				a.deptid as "dept.id",
+				b.name as "dept.name",
+				a.periodid as "period.id",
+				c.name as "period.name",
+				a.week as "week",
+				a.ctid as "ct.id",
+				d.teacherid as "ct.user.userId",
+				e.realName as "ct.user.realName",
+				d.courseid as "ct.course.id",
+				f.name as "ct.course.name"
+			from schedular a left join dept b on a.deptid = b.id 
+			left  join period c on a.periodid = c.id
+			left  join classteacher d on a.ctid = d.id
+			left  join user e on d.teacherid  = e.userid
+			left  join course f on d.courseid = f.id
+			where 1 = 1	
+			<if test="dept!=null and dept.id !=null">
+				and a.deptid = #{dept.id}
+			</if>
+			<if test="week!=null and ''!=week">
+				and a.week = #{week}
+			</if>
+			<if test="ct!=null and ct.user!=null and ct.user.userId !=null">
+				and d.teacherid = #{ct.user.userId}
+			</if>
+			<if test="period!=null and period.id !=null">
+				and a.periodid = #{period.id}
+			</if>
+			<if test="ct!=null and ct.course!=null and ct.course.id !=null">
+				and d.courseid = #{ct.course.id}
+			</if>
+			order by a.week
+			<if test="page!=null and rows != null">
+				limit #{page},#{rows}
+			</if>
+	</select>
+	
+	
+	<select id="countSchedular" parameterType="schedular" resultType="int">
+			select 
+				count(*)
+			from schedular a left join dept b on a.deptid = b.id 
+			left  join period c on a.periodid = c.id
+			left  join classteacher d on a.ctid = d.id
+			left  join user e on d.teacherid  = e.userid
+			left  join course f on d.courseid = f.id
+			where 1 = 1	
+			<if test="dept!=null and dept.id !=null">
+				and a.deptid = #{dept.id}
+			</if>
+			<if test="ct!=null and ct.user!=null and ct.user.userId !=null">
+				and d.teacherid = #{ct.user.userId}
+			</if>
+			<if test="ct!=null and ct.course!=null and ct.course.id !=null">
+				and d.courseid = #{ct.course.id}
+			</if>
+			<if test="week!=null and ''!=week">
+				and a.week = #{week}
+			</if>
+			<if test="period!=null and period.id !=null">
+				and a.periodid = #{period.id}
+			</if>
+			
+	</select>
+	
+	<insert id="addSchedular" parameterType="schedular">
+		insert into schedular(deptId,week,ctid,periodid) values (#{dept.id},#{week},#{ct.id},#{period.id})
+	</insert>
+	
+	<update id="updateSchedular" parameterType="schedular">
+			update schedular set
+    	<trim suffixOverrides=",">
+			<if test="week!=null">week=#{week},</if>
+			<if test="dept!=null and dept.id != null">deptId=#{dept.id},</if>
+			<if test="period!=null and period.id != null">periodid=#{period.id},</if>
+			<if test="ct!=null and ct.id !=null">ctid=#{ct.id},</if>
+		</trim>
+		<where>id=#{id}</where>
+	</update>
+	
+	<delete id="deleteSchedular" parameterType="schedular">
+		delete from schedular where id = #{id}
+	</delete>
+	
+</mapper>

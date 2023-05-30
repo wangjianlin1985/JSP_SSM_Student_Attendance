@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.as.dao.ClassTeacherDao">
+	
+	<select id="findOneByLeadTeacher" resultType="ct" parameterType="ct">
+		select 
+				a.id,
+				a.deptid as "dept.id",
+				b.name as "dept.name",
+				a.teacherid as "user.userId",
+				c.realName as "user.realName",
+				a.islead,
+				a.courseid as "course.id",
+				d.name as "course.name"
+			from classteacher a left join dept b on a.deptid = b.id
+			left join user c on a.teacherid = c.userid 
+			left join course d on a.courseid = d.id
+			where a.teacherid = #{user.userId} and islead = 1
+	</select>
+
+
+	<select id="findClassTeacher" resultType="ct" parameterType="ct">
+			select 
+				a.id,
+				a.deptid as "dept.id",
+				b.name as "dept.name",
+				a.teacherid as "user.userId",
+				c.realName as "user.realName",
+				a.islead,
+				a.courseid as "course.id",
+				d.name as "course.name"
+			from classteacher a left join dept b on a.deptid = b.id
+			left join user c on a.teacherid = c.userid 
+			left join course d on a.courseid = d.id
+			where 1 = 1	
+			<if test="dept!=null and dept.id !=null">
+				and a.deptid = #{dept.id}
+			</if>
+			<if test="user!=null and user.userId !=null">
+				and a.teacherid = #{user.userId}
+			</if>
+			<if test="course!=null and course.id !=null">
+				and a.courseid = #{course.id}
+			</if>
+			<if test="start != null and ''!=start">
+				and (b.name like   '%' #{start} '%'   or c.realName like   '%' #{start} '%'  or  d.name  like   '%' #{start} '%'   ) 
+			</if>
+			<if test="page!=null and rows != null">
+				limit #{page},#{rows}
+			</if>
+	</select>
+	
+	
+	<select id="countClassTeacher" parameterType="ct" resultType="int">
+			select 
+				count(*)
+			from classteacher a left join dept b on a.deptid = b.id
+			left join user c on a.teacherid = c.userid 
+			left join course d on a.courseid = d.id
+			 where 1 = 1	
+			<if test="dept!=null and dept.id !=null">
+				and a.deptid = #{dept.id}
+			</if>
+			<if test="user!=null and user.userId !=null">
+				and a.teacherid = #{user.userId}
+			</if>
+			<if test="course!=null and course.id !=null">
+				and a.courseid = #{course.id}
+			</if>
+			<if test="start != null and ''!=start">
+				and (b.name like   '%' #{start} '%'   or c.realName like   '%' #{start} '%'  or  d.name  like   '%' #{start} '%'   ) 
+			</if>
+	</select>
+	
+	<insert id="addClassTeacher" parameterType="ct">
+		insert into classteacher(deptId,teacherId,islead,courseid) values (#{dept.id},#{user.userId},#{islead},#{course.id})
+	</insert>
+	
+	<update id="updateClassTeacher" parameterType="ct">
+			update classteacher set
+    	<trim suffixOverrides=",">
+			<if test="islead!=null">islead=#{islead},</if>
+			<if test="dept!=null and dept.id != null">deptId=#{dept.id},</if>
+			<if test="course!=null and course.id != null">courseid=#{course.id},</if>
+			<if test="user!=null and user.userId !=null">teacherId=#{user.userId},</if>
+		</trim>
+		<where>id=#{id}</where>
+	</update>
+	
+	<delete id="deleteClassTeacher" parameterType="ct">
+		delete from classteacher where id = #{id}
+	</delete>
+	
+</mapper>

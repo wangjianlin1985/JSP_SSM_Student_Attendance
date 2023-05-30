@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.as.dao.CourseDao">
+	<select id="findCourse" parameterType="course" resultType="course">
+		select id,name from course
+		<if test="name!=null and ''!=name">
+			where name = #{name}
+		</if>
+		<if test="page!=null and rows != null">
+			limit #{page},#{rows}
+		</if>
+	</select>
+	
+	<select id="countCourse" parameterType="course" resultType="int">
+		select count(*) from course 
+		<if test="name!=null and ''!=name">
+			where name = #{name}
+		</if>
+	</select>
+	
+	<insert id="addCourse" parameterType="course">
+		insert into course(name) values (#{name})
+	</insert>
+	
+	<update id="updateCourse" parameterType="course">
+		update course set name = #{name} where id = #{id}
+	</update>
+	
+	<delete id="deleteCourse" parameterType="course">
+		delete from course where id = #{id}
+	</delete>
+	
+</mapper>

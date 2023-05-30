@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.as.dao.LeaveDao">
+
+	<select id="findLeaveList" parameterType="leave" resultType="leave">
+		select 
+			a.id as "id",
+			a.result  as "result",
+			a.studentId as "student.userId",
+			b.realName as "student.realName",
+			b.deptid as "student.dept.id",
+			c.name as "student.dept.name",
+			a.applystart,a.applyday,
+			a.applyend,a.applytime,
+			a.type,a.reason,
+			a.teacherid as "teacher.userId",
+			d.realName as "teacher.realName",
+			a.teacherresult,a.teachertime,
+			a.teachercommand,
+			a.leaderid as "leader.userId",
+			e.realName as "leader.realName",
+			a.leaderresult,a.leadertime,
+			a.leadercommand
+		from leaves a 
+			left join user b on a.studentid = b.userId
+			left join dept c on b.deptid = c.id
+			left join user d on a.teacherid = d.userId
+			left join user e on a.leaderid = d.userId
+		where 1 = 1
+		<if test="type!=null and ''!=type">
+			and a.type = #{type}
+		</if>	
+		<if test="student!=null and student.userId!=null">
+			and a.studentid = #{student.userId}
+		</if>
+		<if test="teacher!=null and teacher.userId!=null">
+			and a.teacherid = #{teacher.userId}
+		</if>
+		<if test="leader!=null and leader.userId!=null">
+			and a.leaderid = #{leader.userId}
+		</if>
+		<if test="teacherHis!=null and ''!=teacherHis">
+			and a.teacherresult != #{teacherHis}
+		</if>
+		<if test="leaderHis!=null and ''!=leaderHis">
+			and a.leaderresult != #{leaderHis} and a.applyday >= 3
+		</if>
+		<if test="student!=null and student.dept!=null and student.dept.id!=null">
+			and b.deptid = #{student.dept.id}
+		</if>
+		<if test="teacherresult!=null and ''!=teacherresult">
+			and a.teacherresult = #{teacherresult}
+		</if>	
+		<if test="leaderresult!=null and ''!=leaderresult">
+			and a.leaderresult = #{leaderresult}
+		</if>
+		<if test="result!=null and ''!=result">
+			and a.result = #{result}
+		</if>
+		<if test="start!=null and ''!=start">
+			and a.applytime >= #{start}
+		</if>
+		<if test="keyword!=null and ''!=keyword">
+			and b.realName like '%'  #{keyword} '%'
+		</if>
+		<if test="end!=null and ''!=end">
+			<![CDATA[and a.applytime <= #{end}]]>
+		</if>
+		order by a.applytime desc 
+		<if test="page!=null and rows != null">
+				limit #{page},#{rows}
+		</if>
+	</select>
+
+
+<select id="findOneLeaveById" parameterType="int" resultType="leave">
+		select 
+			a.id as "id",
+			a.result  as "result",
+			a.studentId as "student.userId",
+			b.realName as "student.realName",
+			b.deptid as "student.dept.id",
+			c.name as "student.dept.name",
+			a.applystart,a.applyday,
+			a.applyend,a.applytime,
+			a.type,a.reason,
+			a.teacherid as "teacher.userId",
+			d.realName as "teacher.realName",
+			a.teacherresult,a.teachertime,
+			a.teachercommand,
+			a.leaderid as "leader.userId",
+			e.realName as "leader.realName",
+			a.leaderresult,a.leadertime,
+			a.leadercommand
+		from leaves a 
+			left join user b on a.studentid = b.userId
+			left join dept c on b.deptid = c.id
+			left join user d on a.teacherid = d.userId
+			left join user e on a.leaderid = d.userId
+		where a.id = #{id}	
+</select>
+
+
+<select id="countLeaveList" parameterType="leave" resultType="int">
+		select 
+			count(*)
+		from leaves a 
+			left join user b on a.studentid = b.userId
+			left join dept c on b.deptid = c.id
+			left join user d on a.teacherid = d.userId
+			left join user e on a.leaderid = d.userId
+		where 1 = 1
+		<if test="type!=null and ''!=type">
+			and a.type = #{type}
+		</if>	
+		<if test="student!=null and student.userId!=null">
+			and a.studentid = #{student.userId}
+		</if>
+		<if test="teacherHis!=null and ''!=teacherHis">
+			and a.teacherresult != #{teacherHis}
+		</if>
+		<if test="leaderHis!=null and ''!=leaderHis">
+			and a.leaderresult != #{leaderHis} and a.applyday >= 3
+		</if>
+		<if test="teacher!=null and teacher.userId!=null">
+			and a.teacherid = #{teacher.userId}
+		</if>
+		<if test="leader!=null and leader.userId!=null">
+			and a.leaderid = #{leader.userId}
+		</if>
+		<if test="result!=null and ''!=result">
+			and a.result = #{result}
+		</if>
+		<if test="student!=null and student.dept!=null and student.dept.id!=null">
+			and b.deptid = #{student.dept.id}
+		</if>
+		<if test="teacherresult!=null and ''!=teacherresult">
+			and a.teacherresult = #{teacherresult}
+		</if>	
+		<if test="keyword!=null and ''!=keyword">
+			and b.realName like '%'  #{keyword} '%'
+		</if>
+		<if test="leaderresult!=null and ''!=leaderresult">
+			and a.leaderresult = #{leaderresult}
+		</if>
+		<if test="start!=null and ''!=start">
+			and a.applytime >= #{start}
+		</if>
+		<if test="end!=null and ''!=end">
+			<![CDATA[and a.applytime <= #{end}]]>
+		</if>
+	</select>
+
+
+
+	<insert id="addLeave" parameterType="leave">
+		insert into leaves(studentid,applystart,applyend,applytime,
+		applyday,type,reason,teacherid,teacherresult,result) values(#{student.userId},
+		#{applystart},#{applyend},#{applytime},#{applyday},#{type},#{reason},
+		#{teacher.userId},#{teacherresult},#{result})
+	</insert>
+	
+	<delete id="deleteLeave" parameterType="leave"> 
+		delete from leaves where id = #{id}  and result = #{result}
+	</delete>
+	
+	<update id="updateTeacherLeave" parameterType="leave">
+		update leaves set 
+		<trim suffixOverrides=",">
+			<if test="teacherresult!=null">teacherresult=#{teacherresult},</if>
+			<if test="result!=null">result=#{result},</if>
+			<if test="teachertime">teachertime=#{teachertime},</if>
+			<if test="teachercommand != null">teachercommand=#{teachercommand},</if>
+			<if test="leader!=null and  leader.userId !=null">leaderid=#{leader.userId},</if>
+		</trim>
+		<where>id=#{id} </where>
+	</update>
+	
+	<update id="updateLeaderLeave" parameterType="leave">
+		update leaves set 
+		<trim suffixOverrides=",">
+			<if test="leaderresult!=null">leaderresult=#{leaderresult},</if>
+			<if test="leadertime">leadertime=#{leadertime},</if>
+			<if test="result!=null">result=#{result},</if>
+			<if test="leadercommand != null">leadercommand=#{leadercommand},</if>
+		</trim>
+		<where>id=#{id} </where>
+	</update>
+	
+	<update id="updateStudentLeave" parameterType="leave">
+		update leaves set 
+		<trim suffixOverrides=",">
+			<if test="applystart!=null">applystart=#{applystart},</if>
+			<if test="applyend">applyend=#{applyend},</if>
+			<if test="applytime!= null">applytime=#{applytime},</if>
+			<if test="applyday!= null">applyday=#{applyday},</if>
+			<if test="type!= null">type=#{type},</if>
+			<if test="reason!= null">reason=#{reason},</if>
+		</trim>
+		<where>id=#{id}  and result = #{result}</where> 
+	</update>
+	
+	
+</mapper>

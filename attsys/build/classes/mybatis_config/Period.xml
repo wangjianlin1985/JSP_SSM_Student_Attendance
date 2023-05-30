@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.as.dao.PeriodDao">
+	<select id="findPeriod" parameterType="period" resultType="period">
+		select id,name,start,end from period
+		<if test="page!=null and rows != null">
+			limit #{page},#{rows}
+		</if>
+	</select>
+	
+	<select id="countPeriod" parameterType="period" resultType="int">
+		select count(*) from period 
+	</select>
+	
+	<insert id="addPeriod" parameterType="period">
+		insert into period(name,start,end) values (#{name},#{start},#{end})
+	</insert>
+	
+	<update id="updatePeriod" parameterType="period">
+			update period set 
+		<trim suffixOverrides=",">
+			<if test="name!=null">name=#{name},</if>
+			<if test="start!=null">start=#{start},</if>
+			<if test="end!=null">end=#{end},</if>
+		</trim>
+		where id = #{id}
+	</update>
+	
+	<delete id="deletePeriod" parameterType="period">
+		delete from period where id = #{id}
+	</delete>
+	
+</mapper>

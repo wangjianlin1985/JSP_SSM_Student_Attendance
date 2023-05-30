@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<settings>
+		<setting name="cacheEnabled" value="true" />
+		<setting name="lazyLoadingEnabled" value="true" />
+		<setting name="multipleResultSetsEnabled" value="true" />
+		<setting name="useColumnLabel" value="true" />
+		<setting name="useGeneratedKeys" value="true" />
+		<setting name="defaultExecutorType" value="SIMPLE" />
+		<setting name="defaultStatementTimeout" value="25000" />
+	</settings>
+	
+	<typeAliases>
+		<typeAlias type="com.as.entity.User"               alias="user" />
+		<typeAlias type="com.as.entity.Menu"               alias="menu" />
+		<typeAlias type="com.as.entity.Role"               alias="role" />
+		<typeAlias type="com.as.entity.Operation"          alias="operation" />
+		<typeAlias type="com.as.entity.Dept"          alias="dept" />
+		
+		
+		<typeAlias type="com.as.entity.ClassTeacher"          alias="ct" />
+		<typeAlias type="com.as.entity.Course"          alias="course" />
+		<typeAlias type="com.as.entity.Period"          alias="period" />
+		<typeAlias type="com.as.entity.Schedular"     alias="schedular" />
+		<typeAlias type="com.as.entity.Att"     alias="att" />
+		<typeAlias type="com.as.entity.Leave"     alias="leave" />
+	</typeAliases>
+
+		
+	<mappers>
+		<mapper resource="./mybatis_config/User.xml" />
+		<mapper resource="./mybatis_config/Menu.xml" />
+		<mapper resource="./mybatis_config/Role.xml" />
+		<mapper resource="./mybatis_config/Operation.xml" />
+		<mapper resource="./mybatis_config/Dept.xml" />
+		
+		
+		<mapper resource="./mybatis_config/Course.xml" />
+		<mapper resource="./mybatis_config/Period.xml" />
+		<mapper resource="./mybatis_config/ClassTeacher.xml"  />
+		<mapper resource="./mybatis_config/Schedular.xml"   />
+		<mapper resource="./mybatis_config/Att.xml"   />
+		<mapper resource="./mybatis_config/Leave.xml"   />
+		
+	</mappers>
+	 
+</configuration>

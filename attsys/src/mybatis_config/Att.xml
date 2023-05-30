@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.as.dao.AttDao">
+	<select id="findAtt" parameterType="att" resultType="att">
+		select 
+			a.id as "id",
+			a.date as "date",
+			a.result  as "result",
+			a.periodid as "period.id",
+			e.name as "period.name",
+			a.courseid as "course.id",
+			f.name as "course.name",
+			a.teacherid as "teacher.userId",
+			g.realName as "teacher.realName",
+			a.studentid as "student.userId",
+			b.realName as "student.realName",
+			c.id as "dept.id",c.name as "dept.name",
+			d.id as "grade.id",d.name as "grade.name"
+		from att a 
+		left join user b on a.studentid = b.userId
+		left join dept c on b.deptid = c.id
+		left join dept d on c.pid = d.id
+		left join period e on a.periodid = e.id
+		left join course f on a.courseid = f.id
+		left join user g on a.teacherid = g.userid where 1 = 1 
+		<if test="dept!=null and dept.id !=null">
+			and b.deptid = #{dept.id}
+		</if>
+		<if test="grade!=null and grade.id !=null">
+			and d.id = #{grade.id}
+		</if>
+		<if test="student!=null and student.userId!=null">
+			and a.studentid = #{student.userId}
+		</if>
+		<if test="result!=null and ''!=result">
+			and result = #{result}
+		</if>
+		<if test="keyword!=null and ''!=keyword">
+			and (b.realName like  '%' #{keyword} '%' or g.realName like  '%' #{keyword} '%') 
+		</if>
+		<if test="start!=null and ''!=start">
+			and a.date >= #{start}
+		</if>
+		<if test="end!=null and ''!=end">
+			<![CDATA[and a.date <= #{end}]]>
+		</if>
+		order by a.date desc 
+		<if test="page!=null and rows != null">
+			limit #{page},#{rows}
+		</if>
+	</select>
+	
+	<select id="countAtt" parameterType="att" resultType="int">
+		select 
+			count(*)
+		from att a 
+		left join user b on a.studentid = b.userId
+		left join dept c on b.deptid = c.id
+		left join dept d on c.pid = d.id
+		left join period e on a.periodid = e.id
+		left join course f on a.courseid = f.id
+		left join user g on a.teacherid = g.userid where 1 = 1 
+		<if test="dept!=null and dept.id !=null">
+			and b.deptid = #{dept.id}
+		</if>
+		<if test="grade!=null and grade.id !=null">
+			and d.id = #{grade.id}
+		</if>
+		<if test="result!=null and ''!=result">
+			and result = #{result}
+		</if>
+		<if test="student!=null and student.userId!=null">
+			and a.studentid = #{student.userId}
+		</if>
+		<if test="keyword!=null and ''!=keyword">
+			and (b.realName like  '%' #{keyword} '%' or g.realName like  '%' #{keyword} '%') 
+		</if>
+		<if test="start!=null and ''!=start">
+			and a.date >= #{start}
+		</if>
+		
+		<if test="end!=null and ''!=end">
+			<![CDATA[and a.date <= #{end}]]>
+		</if>
+		
+	</select>
+	
+	<insert id="addAtt" parameterType="att">
+		insert into att(date,studentid,result,teacherid,periodid,courseid) values 
+		(#{date},#{student.userId},#{result},#{teacher.userId},#{period.id},#{course.id})
+	</insert>
+	
+	<update id="updateAttResult" parameterType="att">
+		update att set result = #{result} where id = #{id}
+	</update>
+	
+	
+	<select id="findUnusualAtt"  parameterType="java.util.Map" resultType="att">
+		SELECT  
+			t.studentid as "student.userId",
+			b.realName as "student.realName",
+			t.total as "totalcount",
+			c.id as "dept.id",c.name as "dept.name",
+			d.id as "grade.id",d.name as "grade.name"
+			FROM (
+				SELECT a.studentid,COUNT(a.studentid) AS total
+				FROM att a WHERE result = #{result}
+				<if test="start!=null and ''!=start">
+					 AND a.DATE>= #{start}
+				</if>
+				<if test="end!=null and ''!=end">
+					<![CDATA[and a.date <= #{end}]]>
+				</if>
+				GROUP BY a.studentid  HAVING total >= #{total}
+			) t LEFT JOIN USER b ON t.studentid = b.userId
+			left join dept c on b.deptid = c.id
+			left join dept d on c.pid = d.id
+			<if test="keyword != null and ''!=keyword">
+				where b.realName like '%' #{keyword} '%'
+			</if>
+			order by total desc 
+			<if test="page!=null and rows != null">
+				limit #{page},#{rows}
+			</if>
+	</select>
+	
+	
+	
+	<select id="countUnusualAtt"  parameterType="java.util.Map" resultType="int">
+		SELECT  
+		count(*)
+			FROM (
+				SELECT a.studentid,COUNT(a.studentid) AS total
+				FROM att a WHERE result = #{result}
+				<if test="start!=null and ''!=start">
+					 AND a.DATE>= #{start}
+				</if>
+				<if test="end!=null and ''!=end">
+					<![CDATA[and a.date <= #{end}]]>
+				</if>
+				GROUP BY a.studentid  HAVING total >= #{total}
+			) t LEFT JOIN USER b ON t.studentid = b.userId
+			left join dept c on b.deptid = c.id
+			left join dept d on c.pid = d.id
+			<if test="keyword != null and ''!=keyword">
+				where b.realName like '%' #{keyword} '%'
+			</if>
+	</select>
+	
+</mapper>
